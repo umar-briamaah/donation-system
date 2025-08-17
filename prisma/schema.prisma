@@ -1,0 +1,217 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  password  String
+  phone     String?   // For mobile money
+  role      String    @default("DONOR") // "DONOR" or "ADMIN"
+  isActive  Boolean   @default(true) // Account status
+  emailVerified Boolean @default(false) // Email verification status
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  donations Donation[]
+  payments  Payment[]
+  preferences UserPreferences?
+  settings   UserSettings?
+  activities UserActivity[]
+  emailVerifications EmailVerification?
+  passwordResets PasswordReset?
+}
+
+model Cause {
+  id          String    @id @default(uuid())
+  title       String
+  description String
+  targetAmount Float
+  raisedAmount Float     @default(0)
+  imageUrl    String?
+  category    String    // e.g., "Education", "Healthcare", "Water"
+  location    String    // e.g., "Accra", "Kumasi", "Rural Ghana"
+  status      String    @default("ACTIVE") // "ACTIVE", "COMPLETED", "PAUSED"
+  featured    Boolean   @default(false) // Featured cause
+  urgency     String    @default("NORMAL") // "LOW", "NORMAL", "HIGH", "CRITICAL"
+  deadline    DateTime? // Campaign deadline
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  donations   Donation[]
+}
+
+model Donation {
+  id        String    @id @default(uuid())
+  amount    Float
+  currency  String    @default("GHS")
+  message   String?   // Optional message from donor
+  isAnonymous Boolean  @default(false)
+  status    String    @default("PENDING") // "PENDING", "COMPLETED", "FAILED", "CANCELLED"
+  donationType String  @default("ONE_TIME") // "ONE_TIME", "RECURRING", "MATCHING"
+  recurringInterval String? // "WEEKLY", "MONTHLY", "YEARLY" for recurring donations
+  donatedAt DateTime  @default(now())
+  userId    String?
+  user      User?     @relation(fields: [userId], references: [id])
+  causeId   String
+  cause     Cause     @relation(fields: [causeId], references: [id])
+  payment   Payment?
+}
+
+model Payment {
+  id            String    @id @default(uuid())
+  amount        Float
+  currency      String    @default("GHS")
+  paymentMethod String    // "MOBILE_MONEY", "BANK_TRANSFER", "DEBIT_CARD", "CASH"
+  provider      String?   // e.g., "MTN_MOBILE_MONEY", "VODAFONE_CASH", "AIRTEL_MONEY", "ECOBANK"
+  reference     String    @unique // Payment reference number
+  status        String    @default("PENDING") // "PENDING", "COMPLETED", "FAILED", "CANCELLED"
+  transactionId String?   // External transaction ID from payment provider
+  metadata      Json?     // Additional payment data
+  failureReason String?   // Reason for payment failure
+  processedAt   DateTime? // When payment was processed
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  donation      Donation  @relation(fields: [donationId], references: [id])
+  donationId   String    @unique
+  userId       String
+  user         User      @relation(fields: [userId], references: [id])
+}
+
+model PaymentProvider {
+  id          String    @id @default(uuid())
+  name        String    @unique // e.g., "MTN Mobile Money", "Vodafone Cash"
+  type        String    // "MOBILE_MONEY", "BANK", "CARD"
+  isActive    Boolean   @default(true)
+  config      Json      // Provider-specific configuration
+  fees        Json?     // Fee structure
+  supportedCurrencies String[] // Array of supported currencies
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model UserPreferences {
+  id                    String   @id @default(uuid())
+  userId                String   @unique
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Notification preferences
+  emailNotifications    Boolean  @default(true)
+  smsNotifications      Boolean  @default(false)
+  pushNotifications     Boolean  @default(true)
+  
+  // Donation preferences
+  anonymousDonations    Boolean  @default(false)
+  recurringDonations    Boolean  @default(false)
+  donationReminders     Boolean  @default(true)
+  defaultAmount         Float?   // Default donation amount
+  preferredCauses       String[] // Array of preferred cause categories
+  
+  // Privacy preferences
+  profileVisibility     String   @default("PUBLIC") // "PUBLIC", "PRIVATE", "FRIENDS_ONLY"
+  showDonationHistory   Boolean  @default(true)
+  showEmailInDirectory  Boolean  @default(false)
+  showAmountInDirectory Boolean  @default(false)
+  
+  // Communication preferences
+  newsletterSubscribed  Boolean  @default(true)
+  impactUpdates         Boolean  @default(true)
+  causeRecommendations  Boolean  @default(true)
+  marketingEmails       Boolean  @default(false)
+  
+  // Language and region
+  preferredLanguage     String   @default("en")
+  timezone             String   @default("Africa/Accra")
+  currency             String   @default("GHS")
+  
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model UserSettings {
+  id                    String   @id @default(uuid())
+  userId                String   @unique
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Security settings
+  twoFactorEnabled      Boolean  @default(false)
+  loginNotifications    Boolean  @default(true)
+  sessionTimeout        Int      @default(3600) // in seconds
+  maxLoginAttempts      Int      @default(5)
+  lockoutDuration       Int      @default(900) // 15 minutes in seconds
+  
+  // Account settings
+  autoLogout            Boolean  @default(true)
+  rememberLogin         Boolean  @default(true)
+  lastPasswordChange    DateTime @default(now())
+  lastLogin            DateTime?
+  lastLogout           DateTime?
+  
+  // Display settings
+  theme                 String   @default("light") // "light", "dark", "auto"
+  fontSize              String   @default("medium") // "small", "medium", "large"
+  compactMode           Boolean  @default(false)
+  
+  // Accessibility
+  highContrast          Boolean  @default(false)
+  screenReader          Boolean  @default(false)
+  reducedMotion         Boolean  @default(false)
+  
+  // Token management
+  refreshToken          String?  // Stored refresh token for invalidation
+  tokenVersion          Int      @default(1) // For token invalidation
+  
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+// New model for tracking user activity and security
+model UserActivity {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activityType String  // "LOGIN", "LOGOUT", "PASSWORD_CHANGE", "PROFILE_UPDATE", "DONATION"
+  description String?
+  ipAddress   String?
+  userAgent   String?
+  location    String?
+  success     Boolean  @default(true)
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  
+  @@index([userId, createdAt])
+  @@index([activityType, createdAt])
+}
+
+// New model for email verification
+model EmailVerification {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  @@index([token, expiresAt])
+}
+
+// New model for password reset
+model PasswordReset {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  @@index([token, expiresAt])
+}
