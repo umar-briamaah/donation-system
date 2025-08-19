@@ -8,6 +8,8 @@ interface User {
   email: string;
   role: string;
   phone?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface AuthContextType {
@@ -57,7 +59,9 @@ export function SimpleAuthProvider({ children }: { children: React.ReactNode }) 
           name: 'Admin User',
           email: 'admin@givehopegh.org',
           role: 'ADMIN',
-          phone: '+233 20 123 4567'
+          phone: '+233 20 123 4567',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         };
         
         setUser(userData);
@@ -98,7 +102,9 @@ export function SimpleAuthProvider({ children }: { children: React.ReactNode }) 
           name: name || 'Admin User',
           email,
           role: 'ADMIN',
-          phone: phone || '+233 20 123 4567'
+          phone: phone || '+233 20 123 4567',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         };
 
         setUser(userData);
