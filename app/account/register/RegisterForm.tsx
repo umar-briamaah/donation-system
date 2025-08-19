@@ -206,14 +206,7 @@ export default function RegisterForm({ auth }: RegisterFormProps) {
             </p>
           </div>
 
-          {/* Demo Credentials */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h3 className="text-sm font-medium text-blue-800 mb-2">Demo Account</h3>
-            <p className="text-xs text-blue-700">
-              <strong>Email:</strong> admin@givehopegh.org<br />
-              <strong>Password:</strong> admin123
-            </p>
-          </div>
+
 
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             {errors.general && (
