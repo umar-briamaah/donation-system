@@ -14,7 +14,7 @@ const Footer = dynamicImport(() => import('../../components/layout/Footer'), {
   ssr: false
 });
 
-import { useAuth } from '../../contexts/AuthContext';
+import { useSimpleAuth } from '../../contexts/SimpleAuthContext';
 import { Heart, DollarSign, CreditCard, Smartphone, Building2, Banknote, CheckCircle, AlertCircle } from 'lucide-react';
 
 // Prevent prerendering
