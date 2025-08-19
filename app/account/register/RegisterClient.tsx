@@ -6,6 +6,7 @@ import RegisterForm from './RegisterForm';
 
 export default function RegisterClient() {
   const [mounted, setMounted] = useState(false);
+  const auth = useSimpleAuth(); // Always call the hook
   
   useEffect(() => {
     setMounted(true);
@@ -21,8 +22,6 @@ export default function RegisterClient() {
       </div>
     );
   }
-  
-  const auth = useSimpleAuth();
   
   return <RegisterForm auth={auth} />;
 }
