@@ -41,3 +41,7 @@ yarn-error.log*
 next-env.d.ts
 
 /app/generated/prisma
+deploy.sh
+# Exclude specific markdown files (but keep README.md)
+LECTURER_QUESTIONS.md
+PROJECT_REPORT.md

@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import { AuthProvider } from "./contexts/AuthContext";
-import { ErrorBoundary } from "./components/ui/ErrorBoundary";
+import { SimpleAuthProvider } from "./contexts/SimpleAuthContext";
+import ErrorBoundary from "./components/ui/ErrorBoundary";
 import ClientOnly from "./components/ui/ClientOnly";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Give Hope - Online Donation Management System",
@@ -28,16 +25,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className} suppressHydrationWarning>
-        <ErrorBoundary>
-          <AuthProvider>
-            <ClientOnly fallback={<div className="light">{children}</div>}>
+      <body className="font-sans antialiased" suppressHydrationWarning>
+        <ClientOnly fallback={<div className="light">{children}</div>}>
+          <ErrorBoundary>
+            <SimpleAuthProvider>
               <ThemeProvider>
                 {children}
               </ThemeProvider>
-            </ClientOnly>
-          </AuthProvider>
-        </ErrorBoundary>
+            </SimpleAuthProvider>
+          </ErrorBoundary>
+        </ClientOnly>
       </body>
     </html>
   );

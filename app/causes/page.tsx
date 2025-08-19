@@ -1,7 +1,22 @@
-import Navigation from '../components/layout/Navigation';
-import Footer from '../components/layout/Footer';
-import { Heart, Search, Filter, Star, MapPin, Calendar } from 'lucide-react';
+'use client';
+
+import dynamicImport from 'next/dynamic'; // Renamed import to avoid conflicts
+
+// Dynamically import components with no SSR to avoid useAuth errors
+const Navigation = dynamicImport(() => import('../components/layout/Navigation'), {
+  ssr: false,
+  loading: () => <div className="h-16 bg-white dark:bg-gray-800" />
+});
+
+const Footer = dynamicImport(() => import('../components/layout/Footer'), {
+  ssr: false
+});
+
+import { Heart, DollarSign, Users, MapPin, Calendar, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
+
+// Prevent prerendering
+export const dynamic = 'force-dynamic';
 
 export default function CausesPage() {
   // Mock data for causes
@@ -104,7 +119,7 @@ export default function CausesPage() {
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
             {/* Search */}
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <input
                 type="text"
                 placeholder="Search causes..."
@@ -114,7 +129,7 @@ export default function CausesPage() {
 
             {/* Category Filter */}
             <div className="flex items-center space-x-2">
-              <Filter className="h-5 w-5 text-gray-600" />
+              <Users className="h-5 w-5 text-gray-600" />
               <select className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-500 focus:border-transparent">
                 {categories.map((category) => (
                   <option key={category} value={category}>{category}</option>
@@ -135,7 +150,7 @@ export default function CausesPage() {
                   <Heart className="h-16 w-16 text-white" />
                   {cause.featured && (
                     <div className="absolute top-4 right-4">
-                      <Star className="h-6 w-6 text-yellow-400 fill-current" />
+                      <TrendingUp className="h-6 w-6 text-yellow-400 fill-current" />
                     </div>
                   )}
                 </div>

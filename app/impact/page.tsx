@@ -1,6 +1,21 @@
-import Navigation from '../components/layout/Navigation';
-import Footer from '../components/layout/Footer';
-import { Heart, Users, Globe, Award, TrendingUp, MapPin } from 'lucide-react';
+'use client';
+
+import dynamicImport from 'next/dynamic'; // Renamed import to avoid conflicts
+
+// Dynamically import components with no SSR to avoid useAuth errors
+const Navigation = dynamicImport(() => import('../components/layout/Navigation'), {
+  ssr: false,
+  loading: () => <div className="h-16 bg-white dark:bg-gray-800" />
+});
+
+const Footer = dynamicImport(() => import('../components/layout/Footer'), {
+  ssr: false
+});
+
+import { Heart, Users, Globe, TrendingUp, Award, MapPin } from 'lucide-react';
+
+// Prevent prerendering
+export const dynamic = 'force-dynamic';
 
 export default function ImpactPage() {
   const impactStats = [

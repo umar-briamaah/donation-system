@@ -1,10 +1,26 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Navigation from '../../components/layout/Navigation';
-import Footer from '../../components/layout/Footer';
-import AdminProtected from '../../components/auth/AdminProtected';
+import dynamicImport from 'next/dynamic'; // Renamed import to avoid conflicts
+
+// Dynamically import components with no SSR to avoid useAuth errors
+const Navigation = dynamicImport(() => import('../../components/layout/Navigation'), {
+  ssr: false,
+  loading: () => <div className="h-16 bg-white dark:bg-gray-800" />
+});
+
+const Footer = dynamicImport(() => import('../../components/layout/Footer'), {
+  ssr: false
+});
+
+const AdminProtected = dynamicImport(() => import('../../components/auth/AdminProtected'), {
+  ssr: false
+});
+
 import { Eye, CheckCircle, XCircle, Clock, DollarSign, Smartphone, Building2, CreditCard, Banknote } from 'lucide-react';
+
+// Prevent prerendering
+export const dynamic = 'force-dynamic';
 
 interface Payment {
   id: string;

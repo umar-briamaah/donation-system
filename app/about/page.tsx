@@ -1,25 +1,40 @@
-import Navigation from '../components/layout/Navigation';
-import Footer from '../components/layout/Footer';
-import { Heart, Users, Globe, Award, Target, Shield } from 'lucide-react';
+'use client';
+
+import dynamicImport from 'next/dynamic'; // Renamed import to avoid conflicts
+
+// Dynamically import components with no SSR to avoid useAuth errors
+const Navigation = dynamicImport(() => import('../components/layout/Navigation'), {
+  ssr: false,
+  loading: () => <div className="h-16 bg-white dark:bg-gray-800" />
+});
+
+const Footer = dynamicImport(() => import('../components/layout/Footer'), {
+  ssr: false
+});
+
+import { Heart, Users, Globe, Award, TrendingUp, MapPin } from 'lucide-react';
+
+// Prevent prerendering
+export const dynamic = 'force-dynamic';
 
 export default function AboutPage() {
   const stats = [
     { label: "Years of Service", value: "15+", icon: Award },
     { label: "Countries Reached", value: "25+", icon: Globe },
     { label: "Lives Impacted", value: "50K+", icon: Users },
-    { label: "Success Rate", value: "94%", icon: Target }
+    { label: "Success Rate", value: "94%", icon: TrendingUp }
   ];
 
   const values = [
     {
       title: "Transparency",
       description: "We believe in complete transparency in all our operations. Every dollar donated is tracked and reported with detailed impact metrics.",
-      icon: Shield
+      icon: MapPin
     },
     {
       title: "Accountability",
       description: "We hold ourselves accountable to our donors, beneficiaries, and the communities we serve. Regular audits and reports ensure we maintain the highest standards.",
-      icon: Target
+      icon: TrendingUp
     },
     {
       title: "Innovation",
@@ -28,24 +43,44 @@ export default function AboutPage() {
     }
   ];
 
+
+
   const team = [
     {
-      name: "Sarah Johnson",
-      role: "Executive Director",
-      bio: "Sarah has over 15 years of experience in nonprofit management and international development.",
-      image: "/images/team/sarah.jpg"
+      name: "Joseph Carl Botchway",
+      role: "Project Manager & Team Lead",
+      bio: "Joseph leads the development team with 15+ years of experience in nonprofit management and international development. He coordinates project timelines, manages stakeholder communication, and ensures project deliverables meet academic and industry standards.",
+      image: "/images/team/joseph.jpg"
     },
     {
-      name: "Michael Chen",
-      role: "Program Director",
-      bio: "Michael specializes in program development and has worked in over 20 countries across Africa and Asia.",
-      image: "/images/team/michael.jpg"
+      name: "Umar Briamah",
+      role: "Lead Full-Stack Developer",
+      bio: "Umar is the primary developer responsible for the core application architecture, implementing authentication systems, payment integration, and ensuring the application meets production-ready standards. He specializes in Next.js, React, and modern web technologies.",
+      image: "/images/team/umar.jpg"
     },
     {
-      name: "Dr. Emily Rodriguez",
-      role: "Medical Director",
-      bio: "Dr. Rodriguez brings 12 years of medical experience in under served communities worldwide.",
-      image: "/images/team/emily.jpg"
+      name: "Richmond Addo Appiah",
+      role: "Frontend Developer & UI/UX Specialist",
+      bio: "Richmond focuses on creating intuitive user interfaces, responsive design, and ensuring excellent user experience across all devices. He implements modern design principles and accessibility standards.",
+      image: "/images/team/⁠richmond.jpg"
+    },
+    {
+      name: "Farouk Yussif",
+      role: "Backend Developer & Database Architect",
+      bio: "Farouk designs and implements the database schema, API endpoints, and server-side logic. He ensures data security, optimal performance, and scalable architecture for the donation system.",
+      image: "/images/team/farouk.jpg"
+    },
+    {
+      name: "Richmond kojo Ntri Peprah",
+      role: "Security Specialist & API Developer",
+      bio: "Richmond implements authentication, authorization, and security measures. He develops secure payment processing, user management systems, and ensures compliance with security best practices.",
+      image: "/images/team/richmondK.jpg"
+    },
+    {
+      name: "Gertrude Sika Ayim",
+      role: "Testing & Quality Assurance Lead",
+      bio: "Gertrude ensures code quality, conducts thorough testing, and validates all features work correctly. She manages testing strategies and ensures the application meets academic project requirements.",
+      image: "/images/team/gertrude.jpg"
     }
   ];
 

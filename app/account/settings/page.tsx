@@ -1,9 +1,8 @@
 'use client';
 
-// Force dynamic rendering to avoid SSR issues
-export const dynamic = 'force-dynamic';
-
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '../../contexts/AuthContext';
 import Navigation from '../../components/layout/Navigation';
 import Footer from '../../components/layout/Footer';
 import { 
@@ -15,6 +14,9 @@ import {
   CheckCircle,
   Heart
 } from 'lucide-react';
+
+// Prevent prerendering
+export const dynamic = 'force-dynamic';
 
 export default function SettingsPage() {
   const [mounted, setMounted] = useState(false);
@@ -39,12 +41,12 @@ export default function SettingsPage() {
   }
 
   const handleSave = async (type: string) => {
-    setMessage({
-      type: 'success',
+      setMessage({
+        type: 'success',
       text: `${type} saved successfully!`
-    });
+      });
 
-    setTimeout(() => setMessage(null), 3000);
+      setTimeout(() => setMessage(null), 3000);
   };
 
   const tabs = [
@@ -119,13 +121,13 @@ export default function SettingsPage() {
             <p className="text-gray-600 mb-6">
               This section is under development. More settings will be available soon.
             </p>
-            <button
+                <button
               onClick={() => handleSave(activeTab)}
               className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md font-medium"
             >
               Save {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-            </button>
-          </div>
+                      </button>
+                    </div>
         </div>
       </div>
 

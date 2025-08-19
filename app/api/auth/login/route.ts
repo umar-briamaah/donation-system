@@ -116,6 +116,8 @@ export async function POST(request: NextRequest) {
     // Return user data and tokens (without password)
     const { password: _passwordRemoved, ...userWithoutPassword } = user;
     
+    console.log('User data being returned:', userWithoutPassword); // Debug: Log user data
+    
     return NextResponse.json({
       user: userWithoutPassword,
       accessToken,

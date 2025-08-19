@@ -67,15 +67,10 @@
   --ring: #dc2626;
 }
 
-/* Import Tailwind after CSS variables */
-@import "tailwindcss";
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* Import Tailwind v3 directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 body {
   background: var(--background);

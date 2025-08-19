@@ -1,7 +1,24 @@
-import Navigation from '../components/layout/Navigation';
-import Footer from '../components/layout/Footer';
+'use client';
+
+import dynamicImport from 'next/dynamic'; // Renamed import to avoid conflicts
+
+// Dynamically import components with no SSR to avoid useAuth errors
+const Navigation = dynamicImport(() => import('../components/layout/Navigation'), {
+  ssr: false,
+  loading: () => <div className="h-16 bg-white dark:bg-gray-800" />
+});
+
+const Footer = dynamicImport(() => import('../components/layout/Footer'), {
+  ssr: false
+});
+
+import { Shield, Eye, Lock, CheckCircle } from 'lucide-react';
+
+// Prevent prerendering
+export const dynamic = 'force-dynamic';
 
 export default function PrivacyPage() {
+  const currentDate = new Date().getDate();
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
@@ -12,7 +29,7 @@ export default function PrivacyPage() {
           
           <div className="prose prose-lg max-w-none">
             <p className="text-gray-600 mb-6">
-              <strong>Last updated:</strong> August 15, 2024
+              <strong>Last updated:</strong> {currentDate}
             </p>
 
             <section className="mb-8">

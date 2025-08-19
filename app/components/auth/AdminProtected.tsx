@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSimpleAuth } from '../../contexts/SimpleAuthContext';
 
 interface AdminProtectedProps {
   children: React.ReactNode;
@@ -9,43 +10,35 @@ interface AdminProtectedProps {
 
 export default function AdminProtected({ children }: AdminProtectedProps) {
   const router = useRouter();
+  const { user, loading: authLoading } = useSimpleAuth();
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in
-    const token = localStorage.getItem('authToken');
-    if (!token) {
+    if (authLoading) {
+      // Still loading auth state
+      return;
+    }
+
+    if (!user) {
       // User not logged in, redirect to login
       router.push('/account/login?redirect=/admin');
       return;
     }
 
-    // In a real app, you'd validate the token with your API
-    // For now, we'll use mock data to check if user is admin
-    // This is a simplified check - in production, validate the token server-side
-    try {
-      // Check user role from stored email
-      const storedEmail = localStorage.getItem('userEmail');
-      
-      if (storedEmail === 'admin@givehopegh.org') {
-        // User is admin
-        setIsAuthorized(true);
-      } else {
-        // User not admin, redirect to dashboard
-        router.push('/account/dashboard');
-        return;
-      }
-    } catch {
-      // Token validation failed, redirect to login
-      router.push('/account/login?redirect=/admin');
+    // Check if user is admin
+    if (user.role === 'ADMIN') {
+      setIsAuthorized(true);
+    } else {
+      // User not admin, redirect to dashboard
+      router.push('/account/dashboard');
       return;
-    } finally {
-      setLoading(false);
     }
-  }, [router]);
 
-  if (loading) {
+    setLoading(false);
+  }, [user, authLoading, router]);
+
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

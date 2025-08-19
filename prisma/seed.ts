@@ -1,9 +1,14 @@
 import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('🌱 Starting database seeding...');
+
+  // Hash passwords for users
+  const adminPassword = await bcrypt.hash('admin123', 10);
+  const userPassword = await bcrypt.hash('password123', 10);
 
   // Create payment providers
   const paymentProviders = await Promise.all([
@@ -84,33 +89,48 @@ async function main() {
   const users = await Promise.all([
     prisma.user.upsert({
       where: { email: 'admin@givehopegh.org' },
-      update: {},
+      update: {
+        password: adminPassword, // Force update password
+        name: 'Admin User',
+        phone: '+233 20 123 4567',
+        role: 'ADMIN',
+      },
       create: {
         name: 'Admin User',
         email: 'admin@givehopegh.org',
-        password: 'admin123', // In production, this should be hashed
+        password: adminPassword,
         phone: '+233 20 123 4567',
         role: 'ADMIN',
       },
     }),
     prisma.user.upsert({
       where: { email: 'john.doe@example.com' },
-      update: {},
+      update: {
+        password: userPassword, // Force update password
+        name: 'John Doe',
+        phone: '+233 24 123 4567',
+        role: 'DONOR',
+      },
       create: {
         name: 'John Doe',
         email: 'john.doe@example.com',
-        password: 'password123', // In production, this should be hashed
+        password: userPassword,
         phone: '+233 24 123 4567',
         role: 'DONOR',
       },
     }),
     prisma.user.upsert({
       where: { email: 'jane.smith@example.com' },
-      update: {},
+      update: {
+        password: userPassword, // Force update password
+        name: 'Jane Smith',
+        phone: '+233 26 123 4567',
+        role: 'DONOR',
+      },
       create: {
         name: 'Jane Smith',
         email: 'jane.smith@example.com',
-        password: 'password123', // In production, this should be hashed
+        password: userPassword,
         phone: '+233 26 123 4567',
         role: 'DONOR',
       },
@@ -287,7 +307,7 @@ async function main() {
       create: {
         id: 'cause-3',
         title: 'Healthcare Access for Rural Villages',
-        description: 'Establish mobile health clinics and provide medical supplies to underserved rural communities across Ghana. This initiative will bring essential healthcare services to remote areas.',
+        description: 'Establish mobile health clinics and provide medical supplies to under served rural communities across Ghana. This initiative will bring essential healthcare services to remote areas.',
         targetAmount: 75000,
         raisedAmount: 42000,
         category: 'Healthcare',
