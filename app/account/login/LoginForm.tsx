@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamicImport from 'next/dynamic';
+import { useSimpleAuth } from '../../contexts/SimpleAuthContext';
 
 // Dynamically import components with no SSR to avoid useAuth errors
 const Navigation = dynamicImport(() => import('../../components/layout/Navigation'), {
@@ -24,19 +25,7 @@ interface User {
   phone?: string;
 }
 
-interface AuthContextType {
-  user: User | null;
-  isAuthenticated: boolean;
-  loading: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean; message?: string; user?: User }>;
-  logout: () => void;
-}
-
-interface LoginFormProps {
-  auth: AuthContextType;
-}
-
-export default function LoginForm({ auth }: LoginFormProps) {
+export default function LoginForm() {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -48,7 +37,7 @@ export default function LoginForm({ auth }: LoginFormProps) {
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
-  const { login, isAuthenticated, loading } = auth;
+  const { login, isAuthenticated, loading } = useSimpleAuth();
 
   // Prevent hydration issues
   useEffect(() => {
